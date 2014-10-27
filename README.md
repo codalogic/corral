@@ -103,6 +103,29 @@ Note that, in the following line from above:
 returned_config< FILE * >::validator() is called to test whether the
 file returned by fopen() is open.
 
+returned_config<T>::value_t allows for some indirection between the
+'tag' type used to select the configuration and the actual type
+of the `returned`'s value.  For example, if you had multiple handles
+that had `int` type, you could have a `returned_config` of:
+
+```cpp
+class foo {};
+
+namespace ret {
+template<>
+struct returned_config< foo >
+{
+	typedef int value_t;
+	static bool validator( const value_t & f ) { return f != 0; }
+	static void on_reset( value_t & f )
+	{
+		std::cout << "Yippee, we've closed\n";
+	}
+	typedef bad_returned_foo Texception;
+};
+}	// namespace ret
+```
+
 To make sure that the default `returned_config` template is not used
 instead of a customised version (for example, due to a missed #include
 file), the default template version of `returned_config` does not compile.

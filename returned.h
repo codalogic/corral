@@ -67,6 +67,7 @@ struct returned_config
 {
 	// Empty so that without template specialisation code won't compile
 
+	// typedef Tvalue value_t;
 	// static bool validator( const Tvalue & ) { return true; }
 	// static void on_reset( Tvalue & value ) {}
 	// typedef bad_returned Texception;
@@ -80,6 +81,7 @@ struct returned_config
 template< typename Tvalue >
 struct returned_config_simple
 {
+	typedef Tvalue value_t;
 	static bool validator( const Tvalue & ) { return true; }
 	static void on_reset( Tvalue & value ) {}
 	typedef bad_returned Texception;
@@ -101,22 +103,23 @@ template< typename Tvalue,
 			typename Tconfig = returned_config< Tvalue > >
 class returned
 {
+public:
+	typedef typename returned_config<Tvalue>::value_t value_t;
+	typedef bool (*validator_t)( const value_t & );
+
 private:
 	bool m_is_valid;
 	bool m_is_owned;
-	Tvalue m_value;
+	value_t m_value;
 
 public:
-	typedef Tvalue value_t;
-	typedef bool (*validator_t)( const Tvalue & );
-
 	returned() : m_is_valid( false ), m_is_owned( false )
 	{}
-	returned( Tvalue value ) : m_value( value )
+	returned( value_t value ) : m_value( value )
 	{
 		m_is_valid = m_is_owned = Tconfig::validator( value );
 	}
-	returned( validator_t validator, Tvalue value ) : m_value( value )
+	returned( validator_t validator, value_t value ) : m_value( value )
 	{
 		m_is_valid = m_is_owned = validator( value );
 	}
@@ -132,7 +135,7 @@ public:
 	}
 	operator returned_bridge<Tvalue>()	// See return_from_function. 2 - Cast to create a bridge
 	{
-		returned_bridge<Tvalue> bridge( m_value, m_is_valid );
+		returned_bridge<value_t> bridge( m_value, m_is_valid );
 		m_is_valid = m_is_owned = false;
 		return bridge;
 	}
@@ -151,19 +154,19 @@ public:
 		if( ! m_is_valid || ! m_is_owned )
 			throw Texception();
 	}
-	Tvalue & get()
+	value_t & get()
 	{
 		if( ! m_is_valid || ! m_is_owned )
 			throw Texception();
 		return m_value;
 	}
-	const Tvalue & get() const
+	const value_t & get() const
 	{
 		if( ! m_is_valid || ! m_is_owned )
 			throw Texception();
 		return m_value;
 	}
-	Tvalue & release()
+	value_t & release()
 	{
 		if( ! m_is_valid )
 			throw bad_returned_release< Texception >();
@@ -180,8 +183,8 @@ public:
 
 private:
 	template< typename Uexception >	// Disable copy assignment
-		returned & operator = ( returned< Tvalue, Uexception > & rhs );
-	virtual bool /* is_resource_released */ on_reset( Tvalue & value ) { return false; }
+		returned & operator = ( returned< value_t, Uexception > & rhs );
+	virtual bool /* is_resource_released */ on_reset( value_t & value ) { return false; }
 };
 
 } // namespace ret

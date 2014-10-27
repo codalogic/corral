@@ -307,6 +307,75 @@ void file_default_exception()
 	}
 }
 
+class bad_returned_foo : public bad_returned {};
+
+class foo {};
+
+bool is_foo_closed = false;
+
+namespace ret {
+template<>
+struct returned_config< foo >
+{
+	typedef int value_t;
+	static bool validator( const value_t & f ) { return f > 0; }
+	static void on_reset( value_t & f )
+	{
+		Good( "foo has been closed" );
+		is_foo_closed = true;
+	}
+	typedef bad_returned_foo Texception;
+};
+}	// namespace ret
+
+void indirect_type_example()
+{
+	is_foo_closed = false;
+	try
+	{
+		returned<foo> f( 1 );
+		Verify( f.get() == 1, "Did indirect_type_example return 1?" );
+		Good( "indirect_type_example didn't throw" );
+	}
+	catch( bad_returned_foo & )
+	{
+		Bad( "indirect_type_example threw bad_returned_foo" );
+	}
+	catch( bad_returned & )
+	{
+		Bad( "indirect_type_example shouldn't throw bad_returned" );
+	}
+	catch( ... )
+	{
+		Bad( "Unknown indirect_type_example excpetion thrown" );
+	}
+	Verify( is_foo_closed, "Did indirect_type_example returned_config<foo>::on_reset() get called?" );
+}
+
+void indirect_type_bad_value_example()
+{
+	is_foo_closed = false;
+	try
+	{
+		returned<foo> f( -1 );
+		int i = f.get();
+		Bad( "indirect_type_bad_value_example threw" );
+	}
+	catch( bad_returned_foo & )
+	{
+		Good( "indirect_type_bad_value_example threw bad_returned_foo" );
+	}
+	catch( bad_returned & )
+	{
+		Bad( "indirect_type_bad_value_example shouldn't throw bad_returned" );
+	}
+	catch( ... )
+	{
+		Bad( "Unknown indirect_type_bad_value_example excpetion thrown" );
+	}
+	Verify( ! is_foo_closed, "Check indirect_type_bad_value_example ret...::on_reset() not called?" );
+}
+
 int main( int argc, char * argv[] )
 {
 	simple_no_value_set_example();
@@ -319,6 +388,8 @@ int main( int argc, char * argv[] )
 	file_example_2();
 	file_example_3();
 	file_default_exception();
+	indirect_type_example();
+	indirect_type_bad_value_example();
 
 	report();
 
