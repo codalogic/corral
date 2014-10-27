@@ -153,7 +153,7 @@ struct returned_config< whandle<Tvalue> >
 And use it as, for example:
 
 ```cpp
-    returned<whandle<int>, bad_returned_custom_whandle> w( new_window() );
+    returned<whandle<wnd>, bad_returned_custom_whandle> w( new_window() );
 ```
 
 where `bad_returned_custom_whandle` is exception to be thrown.
