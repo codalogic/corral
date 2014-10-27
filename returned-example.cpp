@@ -318,7 +318,7 @@ template<>
 struct returned_config< foo >
 {
 	typedef int value_t;
-	static bool validator( const value_t & f ) { return f > 0; }
+	static bool validator( const value_t & f ) { return f >= 0; }
 	static void on_reset( value_t & f )
 	{
 		Good( "foo has been closed" );
@@ -376,6 +376,80 @@ void indirect_type_bad_value_example()
 	Verify( ! is_foo_closed, "Check indirect_type_bad_value_example ret...::on_reset() not called?" );
 }
 
+class bad_returned_whandle : public bad_returned {};
+
+template< typename Tvalue >
+class whandle {};
+
+namespace ret {
+template<typename Tvalue>
+struct returned_config< whandle<Tvalue> >
+{
+	typedef Tvalue value_t;
+	static bool validator( const value_t & f ) { return f >= 0; }
+	static void on_reset( value_t & f )
+	{
+		Good( "whandle<T> has been closed" );
+		is_foo_closed = true;
+	}
+	typedef bad_returned_whandle Texception;
+};
+}	// namespace ret
+
+void double_indirect_type_example()
+{
+	is_foo_closed = false;
+	try
+	{
+		returned<whandle<int> > f( 1 );
+		Verify( f.get() == 1, "Did double_indirect_type_example return 1?" );
+		Good( "double_indirect_type_example didn't throw" );
+	}
+	catch( bad_returned_whandle & )
+	{
+		Bad( "double_indirect_type_example threw bad_returned_foo" );
+	}
+	catch( bad_returned & )
+	{
+		Bad( "double_indirect_type_example shouldn't throw bad_returned" );
+	}
+	catch( ... )
+	{
+		Bad( "Unknown double_indirect_type_example excpetion thrown" );
+	}
+	Verify( is_foo_closed, "Did double_indirect_type_example ret...<whandle<T>>::on_reset() get called?" );
+}
+
+class bad_returned_custom_whandle : public bad_returned_whandle {};
+
+void double_indirect_type_bad_value_example()
+{
+	is_foo_closed = false;
+	try
+	{
+		returned<whandle<int>, bad_returned_custom_whandle> f( -11 );
+		Verify( f.get() == 1, "Did double_indirect_type_bad_value_example return 1?" );
+		Bad( "double_indirect_type_bad_value_example threw" );
+	}
+	catch( bad_returned_custom_whandle & )
+	{
+		Good( "double_indirect_type_bad_value_example threw bad_returned_custom_whandle" );
+	}
+	catch( bad_returned_whandle & )
+	{
+		Bad( "double_indirect_type_bad_value_example shouldn't threw bad_returned_whandle" );
+	}
+	catch( bad_returned & )
+	{
+		Bad( "double_indirect_type_bad_value_example shouldn't throw bad_returned" );
+	}
+	catch( ... )
+	{
+		Bad( "Unknown double_indirect_type_bad_value_example excpetion thrown" );
+	}
+	Verify( ! is_foo_closed, "Did double_indirect_type_bad_value_example ret...<whandle<T>>::on_reset() get called?" );
+}
+
 int main( int argc, char * argv[] )
 {
 	simple_no_value_set_example();
@@ -390,6 +464,8 @@ int main( int argc, char * argv[] )
 	file_default_exception();
 	indirect_type_example();
 	indirect_type_bad_value_example();
+	double_indirect_type_example();
+	double_indirect_type_bad_value_example();
 
 	report();
 

@@ -126,6 +126,38 @@ struct returned_config< foo >
 }	// namespace ret
 ```
 
+If you have a class of handles that have different types, but are all 
+share in the same way for validation checking and clean-up, for example,
+windows handles of different kinds, then you can have a `returned_config`
+of the form:
+
+```cpp
+template< typename Tvalue >
+class whandle {};
+
+namespace ret {
+template<typename Tvalue>
+struct returned_config< whandle<Tvalue> >
+{
+    typedef Tvalue value_t;
+    static bool validator( const value_t & f ) { return f >= 0; }
+    static void on_reset( value_t & f )
+    {
+        std::cout << "whandle<T> has been closed\n";
+    }
+    typedef bad_returned_whandle Texception;
+};
+}	// namespace ret
+```
+
+And use it as, for example:
+
+```cpp
+    returned<whandle<int>, bad_returned_custom_whandle> w( new_window() );
+```
+
+where `bad_returned_custom_whandle` is exception to be thrown.
+
 To make sure that the default `returned_config` template is not used
 instead of a customised version (for example, due to a missed #include
 file), the default template version of `returned_config` does not compile.
