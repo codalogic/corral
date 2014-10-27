@@ -26,3 +26,21 @@
 *.exe
 *.out
 *.app
+
+# Visual Studio bits (Added by PJC)
+*.suo
+*.ilk
+*.lib
+*.dep
+*.pdb
+*.ncb
+*.idb
+*.htm
+*.res
+*.old
+*.user
+*.manifest
+
+
+# Linux bits (Added by PJC)
+*.swp
