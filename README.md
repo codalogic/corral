@@ -173,6 +173,16 @@ Further methods of interest are:
 
 - `reset()`: Clean up the resource immediately.
 
+Installation and The Repository
+===============================
+
+The main library code is in the file `returned.h`.  This is what you 
+need if you want to include the code in your project.
+
+`returned-example.cpp` illustrates how the code can be used.
+`annotate-lite.h` just contains simple code used for annotating the
+example.
+
 Implementation Notes
 ====================
 
