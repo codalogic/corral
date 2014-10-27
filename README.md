@@ -183,6 +183,9 @@ need if you want to include the code in your project.
 `annotate-lite.h` just contains simple code used for annotating the
 example.
 
+The code is targetted at C++03 and has been tested on VS2008, g++ 4.1.1
+and g++ 4.7.0.
+
 Implementation Notes
 ====================
 
@@ -190,9 +193,9 @@ In a similar vain to std::auto_ptr, only one `returned` object can own a
 resource. (Hence assignment is disabled.)  This means, when returning
 a `returned` object from a function ownership must be transferred between
 the object in the called function and the object in the calling function.
-To achieve this, the Colvin/Gibbons idiom (auto_ptr / auto_ptr_ref shuffle)
+To achieve this using C++03, the Colvin/Gibbons idiom (auto_ptr / auto_ptr_ref shuffle)
 is used, which is why there is more compexity in the interface than you might
-expect.
+expect.  C++11 move semantics would make life easier.
 
 See Also
 ========
