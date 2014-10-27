@@ -115,13 +115,13 @@ namespace ret {
 template<>
 struct returned_config< foo >
 {
-	typedef int value_t;
-	static bool validator( const value_t & f ) { return f != 0; }
-	static void on_reset( value_t & f )
-	{
-		std::cout << "Yippee, we've closed\n";
-	}
-	typedef bad_returned_foo Texception;
+    typedef int value_t;
+    static bool validator( const value_t & f ) { return f != 0; }
+    static void on_reset( value_t & f )
+    {
+        std::cout << "Yippee, we've closed\n";
+    }
+    typedef bad_returned_foo Texception;
 };
 }	// namespace ret
 ```
