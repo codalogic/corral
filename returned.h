@@ -87,7 +87,7 @@ struct returned_config_simple
 	typedef bad_returned Texception;
 };
 
-template< typename Tvalue >
+template< typename Tvalue, typename Tconfig >
 struct returned_bridge	// See return_from_function. 1 - define a bridge
 {
 	explicit returned_bridge( Tvalue value, bool is_valid )
@@ -124,8 +124,8 @@ public:
 		m_is_valid = m_is_owned = validator( value );
 	}
 	template< typename Uvalue, typename Uexception, typename Uconfig > friend class returned;
-	template< typename Uexception, typename Uconfig >
-	explicit returned( returned< Tvalue, Uexception, Uconfig > & rhs )
+	template< typename Uexception >
+	explicit returned( returned< Tvalue, Uexception, Tconfig > & rhs )
 	{
 		// Really a move()!
 		m_is_valid = m_is_owned = rhs.is_valid();
@@ -133,13 +133,13 @@ public:
 			m_value = rhs.m_value;
 		rhs.m_is_valid = rhs.m_is_owned = false;
 	}
-	operator returned_bridge<Tvalue>()	// See return_from_function. 2 - Cast to create a bridge
+	operator returned_bridge<Tvalue, Tconfig>()	// See return_from_function. 2 - Cast to create a bridge
 	{
-		returned_bridge<value_t> bridge( m_value, m_is_valid );
+		returned_bridge<Tvalue, Tconfig> bridge( m_value, m_is_valid );
 		m_is_valid = m_is_owned = false;
 		return bridge;
 	}
-	returned( returned_bridge<Tvalue> bridge )	// See return_from_function. 3 - Construct from bridge
+	returned( returned_bridge<Tvalue, Tconfig> bridge )	// See return_from_function. 3 - Construct from bridge
 	{
 		m_value = bridge.m_value;
 		m_is_owned = m_is_valid = bridge.m_is_valid;
@@ -183,7 +183,7 @@ public:
 
 private:
 	template< typename Uexception >	// Disable copy assignment
-		returned & operator = ( returned< value_t, Uexception > & rhs );
+		returned & operator = ( returned< Tvalue, Uexception, Tconfig > & rhs );
 	virtual bool /* is_resource_released */ on_reset( value_t & value ) { return false; }
 };
 
