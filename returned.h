@@ -88,8 +88,11 @@ struct returned_config_simple
 };
 
 template< typename Tvalue, typename Tconfig >
-struct returned_bridge	// See return_from_function. 1 - define a bridge
+class returned_bridge	// See return_from_function. 1 - define a bridge
 {
+private:	// returned_bridge is an implemntation detail of returned
+	template< typename Uvalue, typename Uexception, typename Uconfig > friend class returned;
+
 	explicit returned_bridge( Tvalue value, bool is_valid )
 		: m_value( value ), m_is_valid( is_valid )
 	{}
