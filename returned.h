@@ -169,6 +169,16 @@ public:
 			throw Texception();
 		return m_value;
 	}
+	template< typename Uexception >
+	void take( returned< Tvalue, Uexception, Tconfig > & rhs )
+	{
+		reset();
+		if( rhs.m_is_owned && rhs.m_is_valid )
+		{
+			m_value = rhs.release();
+			m_is_owned = m_is_valid = true;
+		}
+	}
 	value_t & release()
 	{
 		if( ! m_is_valid )
@@ -178,7 +188,7 @@ public:
 	}
 	void reset()
 	{
-		if( m_is_valid && m_is_owned )
+		if( m_is_owned && m_is_valid )
 			if( ! on_reset( m_value ) )
 				Tconfig::on_reset( m_value );
 		m_is_valid = m_is_owned = false;

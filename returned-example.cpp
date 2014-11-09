@@ -450,6 +450,58 @@ void double_indirect_type_bad_value_example()
 	Verify( ! is_foo_closed, "Did double_indirect_type_bad_value_example ret...<whandle<T>>::on_reset() get called?" );
 }
 
+class bad_outer_returned_foo : public bad_returned {};
+class bad_inner_returned_foo : public bad_returned {};
+
+void take_example()
+{
+	is_foo_closed = false;
+	try
+	{
+		returned<foo, bad_outer_returned_foo> outer( 1 );
+		Verify( outer.get() == 1, "Did take_example outer return 1?" );
+		Verify( outer.is_valid(), "Is take_example outer valid?" );
+
+		try
+		{
+			returned<foo, bad_inner_returned_foo> inner( 2 );
+			Verify( inner.get() == 2, "Did take_example inner return 2?" );
+
+			inner.take( outer );
+			Verify( is_foo_closed, "Did take_example inner returned_config<foo>::on_reset() get called?" );
+			Verify( inner.get() == 1, "Did take_example inner return 1?" );
+			Verify( outer.is_valid(), "Is take_example outer still valid?" );
+		}
+		catch( bad_returned & )
+		{
+			Bad( "take_example inner shouldn't throw bad_returned" );
+		}
+
+		Good( "take_example outer didn't throw" );
+
+		is_foo_closed = false;
+
+		outer.check();	// Should throw
+	}
+	catch( bad_inner_returned_foo & )
+	{
+		Bad( "take_example outer threw bad_inner_returned_foo" );
+	}
+	catch( bad_outer_returned_foo & )
+	{
+		Good( "take_example outer threw bad_outer_returned_foo" );
+	}
+	catch( bad_returned & )
+	{
+		Bad( "take_example outer shouldn't throw bad_returned" );
+	}
+	catch( ... )
+	{
+		Bad( "Unknown take_example outer excpetion thrown" );
+	}
+	Verify( ! is_foo_closed, "Did take_example outer returned_config<foo>::on_reset() get called?" );
+}
+
 int main( int argc, char * argv[] )
 {
 	simple_no_value_set_example();
@@ -466,6 +518,7 @@ int main( int argc, char * argv[] )
 	indirect_type_bad_value_example();
 	double_indirect_type_example();
 	double_indirect_type_bad_value_example();
+	take_example();
 
 	report();
 
