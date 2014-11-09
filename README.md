@@ -255,6 +255,16 @@ To achieve this using C++03, the Colvin/Gibbons idiom (auto_ptr / auto_ptr_ref s
 is used, which is why there is more compexity in the interface than you might
 expect.  C++11 move semantics would make life easier.
 
+Future Work
+===========
+
+Currently, whether a resource is valid or not is a simple Boolean condition.  In
+future it may be desirable to have a finer grained definition of why a resource
+may not be valid.  This will likely involve an error_t being added to returned_config<>
+along with some kind of returned_config<>::is_valid() method.  For this reason
+returned<>::m_is_valid and returned<>::m_is_owned are kept separate despite them so far
+always being used together.
+
 See Also
 ========
 
