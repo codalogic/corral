@@ -221,6 +221,9 @@ Further methods of interest are:
 
 - `get()`: Return the handle if valid, or throw the exception.
 
+- `take( returned<...> & rhs )`: Take ownership of the resource owned
+  by `rhs` (if possible).
+
 - `release()`: If the resource is valid, it will return the resource
   and relinquish it's responsibility to clean up the resource when the
   'returned' object is destructed.  If invalid, it will throw the 
