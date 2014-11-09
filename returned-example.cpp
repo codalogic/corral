@@ -470,7 +470,7 @@ void take_example()
 			inner.take( outer );
 			Verify( is_foo_closed, "Did take_example inner returned_config<foo>::on_reset() get called?" );
 			Verify( inner.get() == 1, "Did take_example inner return 1?" );
-			Verify( outer.is_valid(), "Is take_example outer still valid?" );
+			Verify( ! outer.is_valid(), "Is take_example outer still valid?" );
 		}
 		catch( bad_returned & )
 		{

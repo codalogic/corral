@@ -151,21 +151,21 @@ public:
 	{
 		reset();
 	}
-	bool is_valid() const { return m_is_valid; }
+	bool is_valid() const { return m_is_owned && m_is_valid; }
 	void check() const
 	{
-		if( ! m_is_valid || ! m_is_owned )
+		if( ! is_valid() )
 			throw Texception();
 	}
 	value_t & get()
 	{
-		if( ! m_is_valid || ! m_is_owned )
+		if( ! is_valid() )
 			throw Texception();
 		return m_value;
 	}
 	const value_t & get() const
 	{
-		if( ! m_is_valid || ! m_is_owned )
+		if( ! is_valid() )
 			throw Texception();
 		return m_value;
 	}
@@ -173,7 +173,7 @@ public:
 	void take( returned< Tvalue, Uexception, Tconfig > & rhs )
 	{
 		reset();
-		if( rhs.m_is_owned && rhs.m_is_valid )
+		if( rhs.is_valid() )
 		{
 			m_value = rhs.release();
 			m_is_owned = m_is_valid = true;
@@ -181,14 +181,14 @@ public:
 	}
 	value_t & release()
 	{
-		if( ! m_is_valid )
+		if( ! is_valid() )
 			throw bad_returned_release< Texception >();
 		m_is_owned = false;
 		return m_value;
 	}
 	void reset()
 	{
-		if( m_is_owned && m_is_valid )
+		if( is_valid() )
 			if( ! on_reset( m_value ) )
 				Tconfig::on_reset( m_value );
 		m_is_valid = m_is_owned = false;
