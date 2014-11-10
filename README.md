@@ -12,8 +12,8 @@ returned employs the following assumptions:
 - Currently, it only returns whether the resource handle is valid or not.
   There is no indication of 'why' it may have not been possible to obtain
   a resource handle.  This may change in future.
-  
-- If you don't access the resource then it's not an error to not look 
+
+- If you don't access the resource then it's not an error to not look
   at the error condition.
 
 - Similar to std::auto_ptr and std::unique_ptr, the returned object is
@@ -21,7 +21,7 @@ returned employs the following assumptions:
   method.
 
 - returned's behaviour is customised by template specialisation of
-  a returned_config<> class.  This allows specifying how to tell whether a 
+  a returned_config<> class.  This allows specifying how to tell whether a
   resource handle is valid, how a resource should be cleaned up, and what the
   default exception should be.
 
@@ -45,11 +45,11 @@ void process_files()
     try
     {
         returned<FILE *, bad_file_in_1> fin2_1( open_file( "test-exists.txt", "r" ) );
-        FILE * f1 = fin2_1.get();	// Will throw bad_file_in_1 if file not opened
+        FILE * f1 = fin2_1.get();   // Will throw bad_file_in_1 if file not opened
 
         returned<FILE *, bad_file_in_2> fin2_2( open_file( "test-not-exists.txt", "r" ) );
-        FILE * f2 = fin2_2.get();	// Will throw bad_file_in_2 if file not opened
-        
+        FILE * f2 = fin2_2.get();   // Will throw bad_file_in_2 if file not opened
+
         // Use f1 and f2
     }
     catch( bad_file_in_1 & )
@@ -70,7 +70,7 @@ Because `returned` has been configured to know how to close a file there is no
 resource leak if, say, the first file is opened successfully and the second one
 isn't.
 
-The template specialisation of returned_config for a FILE * handle 
+The template specialisation of returned_config for a FILE * handle
 (for example) can look like this:
 
 ```cpp
@@ -85,7 +85,7 @@ struct returned_config< FILE * >
     static void on_reset( value_t & f ) { if( f ) fclose( f ); }
     typedef bad_returned_file Texception;
 };
-}	// namespace ret
+}   // namespace ret
 ```
 
 Where:
@@ -123,10 +123,10 @@ struct returned_config< foo >
     }
     typedef bad_returned_foo Texception;
 };
-}	// namespace ret
+}   // namespace ret
 ```
 
-If you have a class of handles that have different types, but are all 
+If you have a class of handles that have different types, but are all
 share in the same way for validation checking and clean-up, for example,
 windows handles of different kinds, then you can have a `returned_config`
 of the form:
@@ -147,7 +147,7 @@ struct returned_config< whandle<Tvalue> >
     }
     typedef bad_returned_whandle Texception;
 };
-}	// namespace ret
+}   // namespace ret
 ```
 
 And use it as, for example:
@@ -226,7 +226,7 @@ Further methods of interest are:
 
 - `release()`: If the resource is valid, it will return the resource
   and relinquish it's responsibility to clean up the resource when the
-  'returned' object is destructed.  If invalid, it will throw the 
+  'returned' object is destructed.  If invalid, it will throw the
   exception.
 
 - `reset()`: Clean up the resource immediately.
@@ -234,7 +234,7 @@ Further methods of interest are:
 Installation and The Repository
 ===============================
 
-The main library code is in the file `returned.h`.  This is what you 
+The main library code is in the file `returned.h`.  This is what you
 need if you want to include the code in your project.
 
 `returned-example.cpp` illustrates how the code can be used.
