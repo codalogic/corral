@@ -196,7 +196,7 @@ public:
 
 private:
     template< typename Uexception > // Disable copy assignment
-        returned & operator = ( returned< Tvalue, Uexception, Tconfig > & rhs );
+        returned & operator = ( const returned< Tvalue, Uexception, Tconfig > & rhs );
     virtual bool /* is_resource_released */ on_reset( value_t & value ) { return false; }
 };
 
