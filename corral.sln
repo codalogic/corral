@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{416E4B4B-BE64-4eda-8158-042E7944D284}") = "corral", "corral.vcproj", "{9B14D642-9AF0-473c-BECE-E371C3356C77}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B14D642-9AF0-473c-BECE-E371C3356C77}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9B14D642-9AF0-473c-BECE-E371C3356C77}.Debug|Win32.Build.0 = Debug|Win32
+		{9B14D642-9AF0-473c-BECE-E371C3356C77}.Release|Win32.ActiveCfg = Release|Win32
+		{9B14D642-9AF0-473c-BECE-E371C3356C77}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

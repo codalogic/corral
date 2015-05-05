@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="returned"
-	ProjectGUID="{04BF005B-71DE-442E-A4D6-39D3FBC0F4A2}"
-	RootNamespace="returned"
+	Name="corral"
+	ProjectGUID="{9B14D642-9AF0-473c-BECE-E371C3356C77}"
+	RootNamespace="corral"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -169,31 +169,31 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			UniqueIdentifier="{EECB0CB2-3171-40f6-9B94-9959FB417ACF}"
 			>
 			<File
 				RelativePath=".\annotate-lite.h"
 				>
 			</File>
 			<File
-				RelativePath=".\returned-example.cpp"
+				RelativePath=".\corral-example.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\returned.h"
+				RelativePath=".\corral.h"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			UniqueIdentifier="{896289A6-D475-4412-857F-B0E3B4A7F509}"
 			>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			UniqueIdentifier="{246DAEBE-D021-4273-82B0-D7548AD20F5C}"
 			>
 		</Filter>
 	</Files>
