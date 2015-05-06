@@ -1,12 +1,12 @@
-returned
+corral
 ========
 
-returned is another class for combining return code and exception based
+corral is another class for combining return code and exception based
 programming with the aim of making coding safer.
 
-returned employs the following assumptions:
+corral employs the following assumptions:
 
-- returned is intended to track small resource handles rather than large objects.
+- corral is intended to track small resource handles rather than large objects.
   (The example illustrates working with a FILE * handles for files.)
 
 - Currently, it only returns whether the resource handle is valid or not.
@@ -16,38 +16,38 @@ returned employs the following assumptions:
 - If you don't access the resource then it's not an error to not look
   at the error condition.
 
-- Similar to std::auto_ptr and std::unique_ptr, the returned object is
+- Similar to std::auto_ptr and std::unique_ptr, the corral object is
   responsible for cleaning up the resource unless you call the release()
   method.
 
-- returned's behaviour is customised by template specialisation of
-  a returned_config<> class.  This allows specifying how to tell whether a
+- corral's behaviour is customised by template specialisation of
+  a corral_config<> class.  This allows specifying how to tell whether a
   resource handle is valid, how a resource should be cleaned up, and what the
   default exception should be.
 
-- returned allows the _calling_ function to decide which exception is thrown
+- corral allows the _calling_ function to decide which exception is thrown
   if an invalid resource is queried.
 
 The latter point of allowing a _calling_ function to set the exception opens up
 an alternative way of coding.  For example:
 
 ```cpp
-returned<FILE *> open_file( const char * name, const char * mode )
+corral<FILE *> open_file( const char * name, const char * mode )
 {
-    return returned<FILE *>( fopen( name, mode ) );
+    return corral<FILE *>( fopen( name, mode ) );
 }
 
-class bad_file_in_1 : public bad_returned_file {};
-class bad_file_in_2 : public bad_returned_file {};
+class bad_file_in_1 : public bad_corral_file {};
+class bad_file_in_2 : public bad_corral_file {};
 
 void process_files()
 {
     try
     {
-        returned<FILE *, bad_file_in_1> fin2_1( open_file( "test-exists.txt", "r" ) );
+        corral<FILE *, bad_file_in_1> fin2_1( open_file( "test-exists.txt", "r" ) );
         FILE * f1 = fin2_1.get();   // Will throw bad_file_in_1 if file not opened
 
-        returned<FILE *, bad_file_in_2> fin2_2( open_file( "test-not-exists.txt", "r" ) );
+        corral<FILE *, bad_file_in_2> fin2_2( open_file( "test-not-exists.txt", "r" ) );
         FILE * f2 = fin2_2.get();   // Will throw bad_file_in_2 if file not opened
 
         // Use f1 and f2
@@ -66,24 +66,24 @@ void process_files()
 This removes a lot of tab nesting that traditionally occurs when accessing
 multiple resources.
 
-Because `returned` has been configured to know how to close a file there is no
+Because `corral` has been configured to know how to close a file there is no
 resource leak if, say, the first file is opened successfully and the second one
 isn't.
 
-The template specialisation of returned_config for a FILE * handle
+The template specialisation of corral_config for a FILE * handle
 (for example) can look like this:
 
 ```cpp
-class bad_returned_file : public bad_returned {};
+class bad_corral_file : public bad_corral {};
 
 namespace ret {
 template<>
-struct returned_config< FILE * >
+struct corral_config< FILE * >
 {
     typedef FILE * value_t;
     static bool validator( const value_t & f ) { return f != 0; }
     static void on_reset( value_t & f ) { if( f ) fclose( f ); }
-    typedef bad_returned_file Texception;
+    typedef bad_corral_file Texception;
 };
 }   // namespace ret
 ```
@@ -97,23 +97,23 @@ Where:
 Note that, in the following line from above:
 
 ```cpp
-    return returned<FILE *>( fopen( name, mode ) );
+    return corral<FILE *>( fopen( name, mode ) );
 ```
 
-returned_config< FILE * >::validator() is called to test whether the
-file returned by fopen() is open.
+corral_config< FILE * >::validator() is called to test whether the
+file corral by fopen() is open.
 
-returned_config<T>::value_t allows for some indirection between the
+corral_config<T>::value_t allows for some indirection between the
 'tag' type used to select the configuration and the actual type
-of the `returned`'s value.  For example, if you had multiple handles
-that had `int` type, you could have a `returned_config` of:
+of the `corral`'s value.  For example, if you had multiple handles
+that had `int` type, you could have a `corral_config` of:
 
 ```cpp
 class foo {};
 
 namespace ret {
 template<>
-struct returned_config< foo >
+struct corral_config< foo >
 {
     typedef int value_t;
     static bool validator( const value_t & f ) { return f != 0; }
@@ -121,14 +121,14 @@ struct returned_config< foo >
     {
         std::cout << "Yippee, we've closed\n";
     }
-    typedef bad_returned_foo Texception;
+    typedef bad_corral_foo Texception;
 };
 }   // namespace ret
 ```
 
 If you have a class of handles that have different types, but are all
 share in the same way for validation checking and clean-up, for example,
-windows handles of different kinds, then you can have a `returned_config`
+windows handles of different kinds, then you can have a `corral_config`
 of the form:
 
 ```cpp
@@ -137,7 +137,7 @@ class whandle {};
 
 namespace ret {
 template<typename Tvalue>
-struct returned_config< whandle<Tvalue> >
+struct corral_config< whandle<Tvalue> >
 {
     typedef Tvalue value_t;
     static bool validator( const value_t & f ) { return f >= 0; }
@@ -145,7 +145,7 @@ struct returned_config< whandle<Tvalue> >
     {
         std::cout << "whandle<T> has been closed\n";
     }
-    typedef bad_returned_whandle Texception;
+    typedef bad_corral_whandle Texception;
 };
 }   // namespace ret
 ```
@@ -153,21 +153,21 @@ struct returned_config< whandle<Tvalue> >
 And use it as, for example:
 
 ```cpp
-    returned<whandle<wnd>, bad_returned_custom_whandle> w( new_window() );
+    corral<whandle<wnd>, bad_corral_custom_whandle> w( new_window() );
 ```
 
-where `bad_returned_custom_whandle` is exception to be thrown.
+where `bad_corral_custom_whandle` is exception to be thrown.
 
-To make sure that the default `returned_config` template is not used
+To make sure that the default `corral_config` template is not used
 instead of a customised version (for example, due to a missed #include
-file), the default template version of `returned_config` does not compile.
+file), the default template version of `corral_config` does not compile.
 All handle types must therefore have a custom template defined for them.  If no
 specialising is required, then a pre-defined default can be used by doing:
 
 ```cpp
 namespace ret {
 template<>
-struct returned_config<int> : public returned_config_simple<int> {};
+struct corral_config<int> : public corral_config_simple<int> {};
 }
 ```
 
@@ -182,7 +182,7 @@ void my_program()
     {
         file_handler();
     }
-    catch( bad_returned & )
+    catch( bad_corral & )
     {
         error( "A resource was invalid and not checked" );
     }
@@ -190,10 +190,10 @@ void my_program()
 
 void file_handler()
 {
-        returned<FILE *> fin3_1( open_file( "test-in-1.txt", "r" ) );
+        corral<FILE *> fin3_1( open_file( "test-in-1.txt", "r" ) );
         if( fin3_1.is_valid() )
         {
-            returned<FILE *> fin3_2 = open_file( "test-in-2.txt", "r" );
+            corral<FILE *> fin3_2 = open_file( "test-in-2.txt", "r" );
             if( fin3_2.is_valid() )
             {
                 // Use fin3_1 and fin3_2
@@ -204,13 +204,13 @@ void file_handler()
 
 Further methods of interest are:
 
-- `returned()`: Construct object with resource marked as invalid.
+- `corral()`: Construct object with resource marked as invalid.
 
-- `returned( Tvalue value )`: Construct object using resource handle
-  value.  `returned_config<Tvalue>::validator()` will be called to
+- `corral( Tvalue value )`: Construct object using resource handle
+  value.  `corral_config<Tvalue>::validator()` will be called to
   determine whether the resource is valid.
 
-- `returned( validator_t validator, Tvalue value )`: Construct object
+- `corral( validator_t validator, Tvalue value )`: Construct object
   using resource handle value.  The function pointed to by `validator`
   will be called to determine whether the resource is valid.
 
@@ -221,12 +221,12 @@ Further methods of interest are:
 
 - `get()`: Return the handle if valid, or throw the exception.
 
-- `take( returned<...> & rhs )`: Take ownership of the resource owned
+- `take( corral<...> & rhs )`: Take ownership of the resource owned
   by `rhs` (if possible).
 
 - `release()`: If the resource is valid, it will return the resource
   and relinquish it's responsibility to clean up the resource when the
-  'returned' object is destructed.  If invalid, it will throw the
+  'corral' object is destructed.  If invalid, it will throw the
   exception.
 
 - `reset()`: Clean up the resource immediately.
@@ -234,10 +234,10 @@ Further methods of interest are:
 Installation and The Repository
 ===============================
 
-The main library code is in the file `returned.h`.  This is what you
+The main library code is in the file `corral.h`.  This is what you
 need if you want to include the code in your project.
 
-`returned-example.cpp` illustrates how the code can be used.
+`corral-example.cpp` illustrates how the code can be used.
 `annotate-lite.h` just contains simple code used for annotating the
 example.
 
@@ -247,9 +247,9 @@ and g++ 4.7.0.
 Implementation Notes
 ====================
 
-In a similar vain to std::auto_ptr, only one `returned` object can own a
+In a similar vain to std::auto_ptr, only one `corral` object can own a
 resource. (Hence assignment is disabled.)  This means, when returning
-a `returned` object from a function ownership must be transferred between
+a `corral` object from a function ownership must be transferred between
 the object in the called function and the object in the calling function.
 To achieve this using C++03, the Colvin/Gibbons idiom (auto_ptr / auto_ptr_ref shuffle)
 is used, which is why there is more compexity in the interface than you might
@@ -260,9 +260,9 @@ Future Work
 
 Currently, whether a resource is valid or not is a simple Boolean condition.  In
 future it may be desirable to have a finer grained definition of why a resource
-may not be valid.  This will likely involve an error_t being added to returned_config<>
-along with some kind of returned_config<>::is_valid() method.  For this reason
-returned<>::m_is_valid and returned<>::m_is_owned are kept separate despite them so far
+may not be valid.  This will likely involve an error_t being added to corral_config<>
+along with some kind of corral_config<>::is_valid() method.  For this reason
+corral<>::m_is_valid and corral<>::m_is_owned are kept separate despite them so far
 always being used together.
 
 See Also
