@@ -62,14 +62,14 @@ class bad_corral_release : public std::exception
     }
 };
 
-template< typename Tvalue >
+template< typename TvalueId >
 struct corral_config
 {
     // Empty so that without template specialisation code won't compile
 
-    // typedef Tvalue value_t;
-    // static bool validator( const Tvalue & ) { return true; }
-    // static void on_reset( Tvalue & value ) {}
+    // typedef TvalueId value_t;
+    // static bool validator( const value_t & ) { return true; }
+    // static void on_reset( value_t & value ) {}
     // typedef bad_corral Texception;
 };
 
@@ -78,36 +78,38 @@ struct corral_config
 // template<>
 // struct corral_config<int> : public corral_config_simple<int> {};
 // }
-template< typename Tvalue >
+template< typename TvalueId >
 struct corral_config_simple
 {
-    typedef Tvalue value_t;
-    static bool validator( const Tvalue & ) { return true; }
-    static void on_reset( Tvalue & value ) {}
+    typedef TvalueId value_t;
+    static bool validator( const value_t & ) { return true; }
+    static void on_reset( value_t & value ) {}
     typedef bad_corral Texception;
 };
 
-template< typename Tvalue, typename Tconfig >
+template< typename TvalueId, typename Tconfig >
 class corral_bridge   // See return_from_function. 1 - define a bridge
 {
 private:    // corral_bridge is an implementation detail of corral
     template< typename Uvalue, typename Uexception, typename Uconfig > friend class corral;
 
-    explicit corral_bridge( Tvalue value, bool is_valid )
+    typedef typename corral_config<TvalueId>::value_t value_t;
+
+    explicit corral_bridge( value_t value, bool is_valid )
         : m_value( value ), m_is_valid( is_valid )
     {}
 
     bool m_is_valid;
-    Tvalue m_value;
+    value_t m_value;
 };
 
-template< typename Tvalue,
-            typename Texception = typename corral_config<Tvalue>::Texception,
-            typename Tconfig = corral_config< Tvalue > >
+template< typename TvalueId,
+            typename Texception = typename corral_config<TvalueId>::Texception,
+            typename Tconfig = corral_config< TvalueId > >
 class corral
 {
 public:
-    typedef typename corral_config<Tvalue>::value_t value_t;
+    typedef typename corral_config<TvalueId>::value_t value_t;
     typedef bool (*validator_t)( const value_t & );
 
 private:
@@ -128,7 +130,7 @@ public:
     }
     template< typename Uvalue, typename Uexception, typename Uconfig > friend class corral;
     template< typename Uexception >
-    explicit corral( corral< Tvalue, Uexception, Tconfig > & rhs )
+    explicit corral( corral< TvalueId, Uexception, Tconfig > & rhs )
     {
         // Really a move()!
         m_is_valid = m_is_owned = rhs.is_valid();
@@ -136,13 +138,13 @@ public:
             m_value = rhs.m_value;
         rhs.m_is_valid = rhs.m_is_owned = false;
     }
-    operator corral_bridge<Tvalue, Tconfig>() // See return_from_function. 2 - Cast to create a bridge
+    operator corral_bridge<TvalueId, Tconfig>() // See return_from_function. 2 - Cast to create a bridge
     {
-        corral_bridge<Tvalue, Tconfig> bridge( m_value, m_is_valid );
+        corral_bridge<TvalueId, Tconfig> bridge( m_value, m_is_valid );
         m_is_valid = m_is_owned = false;
         return bridge;
     }
-    corral( corral_bridge<Tvalue, Tconfig> bridge ) // See return_from_function. 3 - Construct from bridge
+    corral( corral_bridge<TvalueId, Tconfig> bridge ) // See return_from_function. 3 - Construct from bridge
     {
         m_value = bridge.m_value;
         m_is_owned = m_is_valid = bridge.m_is_valid;
@@ -170,7 +172,7 @@ public:
         return m_value;
     }
     template< typename Uexception >
-    void take( corral< Tvalue, Uexception, Tconfig > & rhs )
+    void take( corral< TvalueId, Uexception, Tconfig > & rhs )
     {
         reset();
         if( rhs.is_valid() )
@@ -196,7 +198,7 @@ public:
 
 private:
     template< typename Uexception > // Disable copy assignment
-        corral & operator = ( const corral< Tvalue, Uexception, Tconfig > & rhs );
+        corral & operator = ( const corral< TvalueId, Uexception, Tconfig > & rhs );
     virtual bool /* is_resource_released */ on_reset( value_t & value ) { return false; }
 };
 

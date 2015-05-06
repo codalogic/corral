@@ -336,6 +336,8 @@ void indirect_type_example()
         corral<foo> f( 1 );
         Verify( f.get() == 1, "Did indirect_type_example return 1?" );
         Good( "indirect_type_example didn't throw" );
+
+        corral<foo> f_moved( f );    // Check can be moved with indirect type
     }
     catch( bad_corral_foo & )
     {
