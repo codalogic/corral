@@ -122,7 +122,7 @@ public:
     {
         m_is_valid = m_is_owned = Tconfig::validator( value );
     }
-    corral( validator_t validator, value_t value ) : m_value( value )
+    corral( value_t value, validator_t validator ) : m_value( value )
     {
         m_is_valid = m_is_owned = validator( value );
     }

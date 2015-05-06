@@ -142,7 +142,7 @@ bool not_zero( const T & v )
 
 corral<int> my_validated_op( int v )
 {
-    return corral<int>( not_zero, v );
+    return corral<int>( v, not_zero );
 }
 
 void validated_non_throw_example()
