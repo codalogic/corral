@@ -76,7 +76,7 @@ struct corral_config
 // A simple non-clean-up config.  For example, use as:
 // namespace corral {
 // template<>
-// struct corral_config<int> : public corral_config_default<int> {};
+// struct corral_config<int> : public corral_config_simple<int> {};
 // }
 template< typename Tvalue >
 struct corral_config_simple
