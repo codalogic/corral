@@ -225,7 +225,7 @@ void file_example_1()
     }
     catch( ... )
     {
-        Bad( "Unknown file_example_1 excpetion thrown" );
+        Bad( "Unknown file_example_1 exception thrown" );
     }
 }
 
@@ -257,7 +257,7 @@ void file_example_2()
     }
     catch( ... )
     {
-        Bad( "Unknown file_example_1 excpetion thrown" );
+        Bad( "Unknown file_example_1 exception thrown" );
     }
 }
 
@@ -281,7 +281,7 @@ void file_example_3()
     }
     catch( ... )
     {
-        Bad( "Unknown file_example_2 excpetion thrown" );
+        Bad( "Unknown file_example_2 exception thrown" );
     }
 }
 
@@ -303,7 +303,7 @@ void file_default_exception()
     }
     catch( ... )
     {
-        Bad( "Unknown file_default_exception excpetion thrown" );
+        Bad( "Unknown file_default_exception exception thrown" );
     }
 }
 
@@ -347,7 +347,7 @@ void indirect_type_example()
     }
     catch( ... )
     {
-        Bad( "Unknown indirect_type_example excpetion thrown" );
+        Bad( "Unknown indirect_type_example exception thrown" );
     }
     Verify( is_foo_closed, "Did indirect_type_example corral_config<foo>::on_reset() get called?" );
 }
@@ -371,7 +371,7 @@ void indirect_type_bad_value_example()
     }
     catch( ... )
     {
-        Bad( "Unknown indirect_type_bad_value_example excpetion thrown" );
+        Bad( "Unknown indirect_type_bad_value_example exception thrown" );
     }
     Verify( ! is_foo_closed, "Check indirect_type_bad_value_example corral...::on_reset() not called?" );
 }
@@ -415,7 +415,7 @@ void double_indirect_type_example()
     }
     catch( ... )
     {
-        Bad( "Unknown double_indirect_type_example excpetion thrown" );
+        Bad( "Unknown double_indirect_type_example exception thrown" );
     }
     Verify( is_foo_closed, "Did double_indirect_type_example corral...<whandle<T>>::on_reset() get called?" );
 }
@@ -445,7 +445,7 @@ void double_indirect_type_bad_value_example()
     }
     catch( ... )
     {
-        Bad( "Unknown double_indirect_type_bad_value_example excpetion thrown" );
+        Bad( "Unknown double_indirect_type_bad_value_example exception thrown" );
     }
     Verify( ! is_foo_closed, "Did double_indirect_type_bad_value_example corral...<whandle<T>>::on_reset() get called?" );
 }
@@ -497,7 +497,7 @@ void take_example()
     }
     catch( ... )
     {
-        Bad( "Unknown take_example outer excpetion thrown" );
+        Bad( "Unknown take_example outer exception thrown" );
     }
     Verify( ! is_foo_closed, "Did take_example outer corral_config<foo>::on_reset() get called?" );
 }
