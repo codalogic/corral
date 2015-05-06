@@ -1,32 +1,34 @@
 corral
 ========
 
-corral is another class for combining return code and exception based
-programming with the aim of making coding safer.
+corral started life as another class for combining return code and exception based
+programming with the aim of making coding safer.  However, it can be used more
+generally for corralling resources that need to be checked for proper initialisation
+before being used, and so it has been given a more general name.
 
 corral employs the following assumptions:
 
 - corral is intended to track small resource handles rather than large objects.
   (The example illustrates working with a FILE * handles for files.)
 
-- Currently, it only returns whether the resource handle is valid or not.
-  There is no indication of 'why' it may have not been possible to obtain
-  a resource handle.  This may change in future.
-
-- If you don't access the resource then it's not an error to not look
-  at the error condition.
-
-- Similar to std::auto_ptr and std::unique_ptr, the corral object is
-  responsible for cleaning up the resource unless you call the release()
-  method.
-
 - corral's behaviour is customised by template specialisation of
   a corral_config<> class.  This allows specifying how to tell whether a
   resource handle is valid, how a resource should be cleaned up, and what the
   default exception should be.
 
+- Similar to std::auto_ptr and std::unique_ptr, the corral object is
+  responsible for cleaning up the resource unless you call the release()
+  method.
+
+- If you don't access the resource then it's not an error to not look
+  at the error condition.
+
 - corral allows the _calling_ function to decide which exception is thrown
   if an invalid resource is queried.
+
+- Currently, it only returns whether the resource handle is valid or not.
+  There is no indication of 'why' it may have not been possible to obtain
+  a resource handle.  This may change in future.
 
 The latter point of allowing a _calling_ function to set the exception opens up
 an alternative way of coding.  For example:
@@ -156,7 +158,7 @@ And use it as, for example:
     corral<whandle<wnd>, bad_corral_custom_whandle> w( new_window() );
 ```
 
-where `bad_corral_custom_whandle` is exception to be thrown.
+where `bad_corral_custom_whandle` is the exception to be thrown.
 
 To make sure that the default `corral_config` template is not used
 instead of a customised version (for example, due to a missed #include
@@ -174,7 +176,7 @@ struct corral_config<int> : public corral_config_simple<int> {};
 The error-code method of coding can also be supported.  For example:
 
 ```cpp
-void file_example_3();
+void file_handler();
 
 void my_program()
 {
@@ -268,6 +270,6 @@ always being used together.
 See Also
 ========
 
-There are many other attempts in this area.  For example, see:
+There are many other offerings in this area.  For example, see:
 
 - Andrei Alexandrescu's [Expected<T>](http://www.hyc.io/boost/expected-proposal.pdf "Expected<T>")
