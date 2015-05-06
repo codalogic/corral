@@ -43,11 +43,11 @@
 
 #include <exception>
 
-namespace crrl {	// 'corral' without the vowels!
+namespace crrl {    // 'corral' without the vowels!
 
 class bad_corral : public std::exception
 {
-    virtual const char* what() const throw()
+    virtual const char * what() const throw()
     {
         return "bad_corral exception";
     }
@@ -56,7 +56,7 @@ class bad_corral : public std::exception
 template< typename T >
 class bad_corral_release : public std::exception
 {
-    virtual const char* what() const throw()
+    virtual const char * what() const throw()
     {
         return "bad_corral_release exception";
     }
