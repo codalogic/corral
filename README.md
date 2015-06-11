@@ -78,7 +78,7 @@ The template specialisation of corral_config for a FILE * handle
 ```cpp
 class bad_corral_file : public bad_corral {};
 
-namespace ret {
+namespace crrl {
 template<>
 struct corral_config< FILE * >
 {
@@ -87,7 +87,7 @@ struct corral_config< FILE * >
     static void on_reset( value_t & f ) { if( f ) fclose( f ); }
     typedef bad_corral_file Texception;
 };
-}   // namespace ret
+}   // namespace crrl
 ```
 
 Where:
@@ -113,7 +113,7 @@ that had `int` type, you could have a `corral_config` of:
 ```cpp
 class foo {};
 
-namespace ret {
+namespace crrl {
 template<>
 struct corral_config< foo >
 {
@@ -125,7 +125,7 @@ struct corral_config< foo >
     }
     typedef bad_corral_foo Texception;
 };
-}   // namespace ret
+}   // namespace crrl
 ```
 
 If you have a class of handles that have different types, but are all
@@ -137,7 +137,7 @@ of the form:
 template< typename Tvalue >
 class whandle {};
 
-namespace ret {
+namespace crrl {
 template<typename Tvalue>
 struct corral_config< whandle<Tvalue> >
 {
@@ -149,7 +149,7 @@ struct corral_config< whandle<Tvalue> >
     }
     typedef bad_corral_whandle Texception;
 };
-}   // namespace ret
+}   // namespace crrl
 ```
 
 And use it as, for example:
@@ -167,7 +167,7 @@ All handle types must therefore have a custom template defined for them.  If no
 specialising is required, then a pre-defined default can be used by doing:
 
 ```cpp
-namespace ret {
+namespace crrl {
 template<>
 struct corral_config<int> : public corral_config_simple<int> {};
 }
